@@ -1,6 +1,6 @@
 %define name    cacti
 %define version 0.8.6j
-%define release 1
+%define release %mkrel 1
 
 Name:       %{name}
 Version:    %{version}
