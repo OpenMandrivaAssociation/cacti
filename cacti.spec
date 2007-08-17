@@ -43,7 +43,6 @@ also SNMP support for those used to creating traffic graphs
 with MRTG.
 
 %prep
-
 %setup -q
 %patch0 -p1
 %patch1 -p1
@@ -54,11 +53,6 @@ find . -type d | xargs chmod 755
 find . -type f | xargs chmod 644
 chmod +x scripts/*.{pl,sh}
 chmod +x poller.php cmd.php
-
-# fix encoding
-for file in `find . -type f`; do
-    perl -pi -e 'BEGIN {exit unless -T $ARGV[0];} s/\r\n$/\n/;' $file
-done
 
 %build
 
