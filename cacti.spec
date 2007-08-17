@@ -1,6 +1,6 @@
 %define name    cacti
-%define version 0.8.6i
-%define release %mkrel 1
+%define version 0.8.6j
+%define release 1
 
 Name:       %{name}
 Version:    %{version}
@@ -10,7 +10,7 @@ License:    GPL
 Group:      System/Servers
 URL:        http://www.cacti.net
 Source0:    http://www.cacti.net/downloads/%{name}-%{version}.tar.bz2
-Patch0:     cacti-0.8.6i.fhs.patch
+Patch0:     cacti-0.8.6j.fhs.patch
 Patch1:     cacti-0.8.6i-use_external_adodb.patch
 Patch2:     cacti-0.8.6h.ldap_protocol.patch
 Requires:   apache-mod_php >= 2.0.54
