@@ -1,5 +1,5 @@
 %define name    cacti
-%define version 0.8.7
+%define version 0.8.7a
 %define release %mkrel 1
 
 Name:       %{name}
@@ -10,11 +10,9 @@ License:    GPL
 Group:      System/Servers
 URL:        http://www.cacti.net
 Source0:    http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-Source1:    http://www.cacti.net/downloads/cactid/cacti-cactid-0.8.6j.tar.gz
-Source2:    http://cactiusers.org/downloads/cacti-plugin-arch.tar.gz
-Patch0:     cacti-0.8.6j.fhs.patch
+Patch0:     cacti-0.8.7a-fhs.patch
 Patch1:     cacti-0.8.6i-use_external_adodb.patch
-Patch3:     cacti-plugin-0.8.7-PA-v1.2.diff
+Patch3:     cacti-0.8.7a-fhs-PA.patch
 Requires:   apache-mod_php >= 2.0.54
 Requires:   php-adodb >= 1:4.64-1mdk
 Requires:   php-cli
@@ -46,9 +44,9 @@ with MRTG.
 
 %prep
 %setup -q
-%patch3 -p1
 %patch0 -p1
 %patch1 -p1
+%patch3 -p1
 
 # fix perms
 find . -type d | xargs chmod 755
