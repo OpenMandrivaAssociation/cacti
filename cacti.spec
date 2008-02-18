@@ -7,7 +7,7 @@
 Name:       %{name}
 Version:    %{version}
 Release:    %{release}
-Summary:    Cacti is a php frontend for rrdtool
+Summary:    Php frontend for rrdtool
 License:    GPL
 Group:      System/Servers
 URL:        http://www.cacti.net
