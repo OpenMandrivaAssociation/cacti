@@ -1,6 +1,6 @@
 %define name    cacti
 %define version 0.8.7b
-%define release %mkrel 1
+%define release %mkrel 2
 
 %define _requires_exceptions pear(/usr/share/php-adodb/adodb.inc.php)
 
@@ -110,7 +110,6 @@ cat > %{buildroot}%{_sysconfdir}/cron.d/%{name} <<EOF
 #!/bin/sh
 */5 * * * *     apache     php %{_datadir}/%{name}/poller.php > /dev/null 2>&1
 EOF
-chmod 755 %{buildroot}%{_sysconfdir}/cron.d/%{name}
 
 # logs
 install -d -m 755 %{buildroot}%{_var}/log/%{name}
