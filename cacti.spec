@@ -1,6 +1,6 @@
 %define name    cacti
 %define version 0.8.7b
-%define release %mkrel 2
+%define release %mkrel 3
 
 %define _requires_exceptions pear(/usr/share/php-adodb/adodb.inc.php)
 
