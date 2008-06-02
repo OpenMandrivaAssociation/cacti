@@ -63,7 +63,7 @@ rm -rf %{buildroot}
 
 install -d -m 755 %{buildroot}%{_var}/www/%{name}
 install -d -m 755 %{buildroot}%{_datadir}/%{name}
-install -d -m 755 %{buildroot}%{_localstatedir}/%{name}
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}
 install -d -m 755 %{buildroot}%{_sysconfdir}
 
 cp *.php %{buildroot}%{_var}/www/%{name}
@@ -169,7 +169,7 @@ fi
 %{_sysconfdir}/cron.d/%{name}
 %{_var}/www/%{name}
 %{_datadir}/%{name}
-%attr(-,apache,apache) %{_localstatedir}/%{name}
+%attr(-,apache,apache) %{_localstatedir}/lib/%{name}
 %attr(-,apache,apache) %{_var}/log/%{name}
 
 
