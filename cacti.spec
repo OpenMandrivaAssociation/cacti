@@ -1,6 +1,6 @@
 %define name    cacti
-%define version 0.8.7b
-%define release %mkrel 4
+%define version 0.8.7d
+%define release %mkrel 1
 
 %define _requires_exceptions pear(/usr/share/php-adodb/adodb.inc.php)
 
@@ -12,9 +12,9 @@ License:    GPL
 Group:      System/Servers
 URL:        http://www.cacti.net
 Source0:    http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-Patch0:     cacti-0.8.7b-fhs.patch
+Patch0:     cacti-0.8.7d-fhs.patch
 Patch1:     cacti-0.8.6i-use_external_adodb.patch
-Patch3:     cacti-0.8.7b-fhs-PA.patch
+Patch3:     cacti-0.8.7d-fhs-PA.patch
 Requires:   apache-mod_php >= 2.0.54
 Requires:   php-adodb >= 1:4.64-1mdk
 Requires:   php-cli
@@ -76,6 +76,7 @@ cp -pr docs %{buildroot}%{_var}/www/%{name}
 cp -pr images %{buildroot}%{_var}/www/%{name}
 cp -pr install %{buildroot}%{_var}/www/%{name}
 cp -pr scripts %{buildroot}%{_datadir}/%{name}
+cp -pr cli %{buildroot}%{_datadir}/%{name}
 cp -pr resource %{buildroot}%{_datadir}/%{name}
 cp -pr lib %{buildroot}%{_datadir}/%{name}
 cp -p cacti.sql %{buildroot}%{_datadir}/%{name}
