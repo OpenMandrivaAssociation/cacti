@@ -1,8 +1,8 @@
 %define name    cacti
-%define version 0.8.7d
-%define release %mkrel 2
+%define version 0.8.7e
+%define release %mkrel 1
 
-%define _requires_exceptions pear(/usr/share/php-adodb/adodb.inc.php)
+%define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)
 
 Name:       %{name}
 Version:    %{version}
@@ -12,9 +12,9 @@ License:    GPL
 Group:      System/Servers
 URL:        http://www.cacti.net
 Source0:    http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-Patch0:     cacti-0.8.7d-fhs.patch
-Patch1:     cacti-0.8.6i-use_external_adodb.patch
-Patch3:     cacti-0.8.7d-fhs-PA.patch
+Patch0:     cacti-plugin-0.8.7e-PA-v2.5.diff
+Patch1:     cacti-0.8.7e-fhs.patch
+Patch2:     cacti-0.8.7e-use-external-adodb.patch
 Requires:   apache-mod_php >= 2.0.54
 Requires:   php-adodb >= 1:4.64-1mdk
 Requires:   php-cli
@@ -48,7 +48,7 @@ with MRTG.
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch3 -p1
+%patch2 -p1
 
 # fix perms
 find . -type d | xargs chmod 755
@@ -61,46 +61,46 @@ chmod +x poller.php cmd.php
 %install
 rm -rf %{buildroot}
 
-install -d -m 755 %{buildroot}%{_var}/www/%{name}
 install -d -m 755 %{buildroot}%{_datadir}/%{name}
 install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}
-install -d -m 755 %{buildroot}%{_sysconfdir}
 
-cp *.php %{buildroot}%{_var}/www/%{name}
+install -d -m 755 %{buildroot}%{_datadir}/%{name}/www
+cp *.php %{buildroot}%{_datadir}/%{name}/www
 # those are not required under web root
 for file in {poller*,cmd}.php; do
-    rm -f %{buildroot}%{_var}/www/%{name}/$file
+    rm -f %{buildroot}%{_datadir}/%{name}/www/$file
     cp $file %{buildroot}%{_datadir}/%{name}
 done
-cp -pr docs %{buildroot}%{_var}/www/%{name}
-cp -pr images %{buildroot}%{_var}/www/%{name}
-cp -pr install %{buildroot}%{_var}/www/%{name}
+cp -pr docs %{buildroot}%{_datadir}/%{name}/www
+cp -pr images %{buildroot}%{_datadir}/%{name}/www
+cp -pr install %{buildroot}%{_datadir}/%{name}/www
+cp -pr include %{buildroot}%{_datadir}/%{name}/www
+
 cp -pr scripts %{buildroot}%{_datadir}/%{name}
 cp -pr cli %{buildroot}%{_datadir}/%{name}
 cp -pr resource %{buildroot}%{_datadir}/%{name}
 cp -pr lib %{buildroot}%{_datadir}/%{name}
 cp -p cacti.sql %{buildroot}%{_datadir}/%{name}
 
+pushd %{buildroot}%{_datadir}/%{name}/www
+ln -s ../lib .
+popd
 
-# distribut include content
-cp -p include/config.php %{buildroot}%{_sysconfdir}/%{name}.conf
-find include -type f -a -name '*.php' -a -not -name 'config.php' | \
-    tar --create --files-from - --remove-files | \
-    (cd %{buildroot}%{_datadir}/%{name} && tar --preserve --extract)
-find include -type f -a -not -name '*.php' -a -not -name 'config.php' | \
-    tar --create --files-from - --remove-files | \
-    (cd %{buildroot}%{_var}/www/%{name} && tar --preserve --extract)
-
-# distribute install content
-install -d -m 755 %{buildroot}%{_datadir}/%{name}/upgrade
-mv %{buildroot}%{_var}/www/%{name}/install/*_to_*.php %{buildroot}%{_datadir}/%{name}/upgrade
+# configuration
+install -d -m 755 %{buildroot}%{_sysconfdir}
+mv %{buildroot}%{_datadir}/%{name}/www/include/config.php \
+    %{buildroot}%{_sysconfdir}/%{name}.conf
+pushd %{buildroot}%{_datadir}/%{name}/www/include
+ln -s ../../../../..%{_sysconfdir}/%{name}.conf config.php
+popd
 
 # apache configuration
 install -d -m 755 %{buildroot}%{_webappconfdir}
 cat > %{buildroot}%{_webappconfdir}/%{name}.conf <<EOF
 # Cacti Apache configuration file
-Alias /%{name} %{_var}/www/%{name}
-<Directory %{_var}/www/%{name}>
+Alias /%{name} %{_datadir}/%{name}/www
+<Directory %{_datadir}/%{name}/www>
+    Options -FollowSymLinks
     Allow from all
 </Directory>
 EOF
@@ -130,10 +130,10 @@ Mandriva RPM specific notes
 setup
 -----
 The setup used here differs from default one, to achieve better FHS compliance.
+- the constant files are in %{_datadir}/%{name}/www
 - the configuration file is /etc/cacti.conf
-- the log files are in /var/log/cacti
-- the files accessibles from the web are in /var/www/cacti
-- the files non accessibles from the web are in /usr/share/cacti
+- the variable files are in %{_localstatedir}/lib/%{name}
+- the log files are in %{_localstatedir}/log/%{name}
 
 post-installation
 -----------------
@@ -168,9 +168,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %{_sysconfdir}/cron.d/%{name}
-%{_var}/www/%{name}
 %{_datadir}/%{name}
 %attr(-,apache,apache) %{_localstatedir}/lib/%{name}
-%attr(-,apache,apache) %{_var}/log/%{name}
+%attr(-,apache,apache) %{_localstatedir}/log/%{name}
 
 
