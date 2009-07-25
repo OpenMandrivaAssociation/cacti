@@ -1,6 +1,6 @@
 %define name    cacti
 %define version 0.8.7e
-%define release %mkrel 1
+%define release %mkrel 2
 
 %define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)
 
@@ -22,6 +22,7 @@ Requires:   php-gd
 Requires:   php-mysql
 Requires:   php-snmp
 Requires:   php-xml
+Requires:   php-sockets
 Requires:   net-snmp-utils
 Requires:   net-snmp
 Requires:   rrdtool
