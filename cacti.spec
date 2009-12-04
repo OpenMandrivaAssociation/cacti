@@ -101,8 +101,12 @@ cat > %{buildroot}%{_webappconfdir}/%{name}.conf <<EOF
 # Cacti Apache configuration file
 Alias /%{name} %{_datadir}/%{name}/www
 <Directory %{_datadir}/%{name}/www>
+    Order allow,deny
+    Allow from 127.0.0.1
+    Deny from all
+    ErrorDocument 403 "Access denied per %{_webappconfdir}/%{name}.conf"
+
     Options -FollowSymLinks
-    Allow from all
 </Directory>
 EOF
 
