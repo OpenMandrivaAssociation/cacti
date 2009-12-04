@@ -1,6 +1,6 @@
 %define name    cacti
 %define version 0.8.7e
-%define release %mkrel 2
+%define release %mkrel 3
 
 %define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)
 
@@ -57,6 +57,9 @@ find . -type f | xargs chmod 644
 chmod +x scripts/*.{pl,sh}
 chmod +x poller.php cmd.php
 
+# no .htaccess file
+rm -f cli/.htaccess
+
 %build
 
 %install
@@ -65,17 +68,12 @@ rm -rf %{buildroot}
 install -d -m 755 %{buildroot}%{_datadir}/%{name}
 install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}
 
-install -d -m 755 %{buildroot}%{_datadir}/%{name}/www
-cp *.php %{buildroot}%{_datadir}/%{name}/www
-# those are not required under web root
-for file in {poller*,cmd}.php; do
-    rm -f %{buildroot}%{_datadir}/%{name}/www/$file
-    cp $file %{buildroot}%{_datadir}/%{name}
-done
-cp -pr docs %{buildroot}%{_datadir}/%{name}/www
-cp -pr images %{buildroot}%{_datadir}/%{name}/www
-cp -pr install %{buildroot}%{_datadir}/%{name}/www
-cp -pr include %{buildroot}%{_datadir}/%{name}/www
+install -d -m 755 %{buildroot}%{_datadir}/%{name}
+cp *.php %{buildroot}%{_datadir}/%{name}
+cp -pr docs %{buildroot}%{_datadir}/%{name}
+cp -pr images %{buildroot}%{_datadir}/%{name}
+cp -pr install %{buildroot}%{_datadir}/%{name}
+cp -pr include %{buildroot}%{_datadir}/%{name}
 
 cp -pr scripts %{buildroot}%{_datadir}/%{name}
 cp -pr cli %{buildroot}%{_datadir}/%{name}
@@ -83,30 +81,51 @@ cp -pr resource %{buildroot}%{_datadir}/%{name}
 cp -pr lib %{buildroot}%{_datadir}/%{name}
 cp -p cacti.sql %{buildroot}%{_datadir}/%{name}
 
-pushd %{buildroot}%{_datadir}/%{name}/www
-ln -s ../lib .
-popd
-
 # configuration
 install -d -m 755 %{buildroot}%{_sysconfdir}
-mv %{buildroot}%{_datadir}/%{name}/www/include/config.php \
+mv %{buildroot}%{_datadir}/%{name}/include/config.php \
     %{buildroot}%{_sysconfdir}/%{name}.conf
-pushd %{buildroot}%{_datadir}/%{name}/www/include
-ln -s ../../../../..%{_sysconfdir}/%{name}.conf config.php
+pushd %{buildroot}%{_datadir}/%{name}/include
+ln -s ../../../..%{_sysconfdir}/%{name}.conf config.php
 popd
 
 # apache configuration
 install -d -m 755 %{buildroot}%{_webappconfdir}
 cat > %{buildroot}%{_webappconfdir}/%{name}.conf <<EOF
 # Cacti Apache configuration file
-Alias /%{name} %{_datadir}/%{name}/www
-<Directory %{_datadir}/%{name}/www>
+Alias /%{name} %{_datadir}/%{name}
+<Directory %{_datadir}/%{name}>
     Order allow,deny
     Allow from 127.0.0.1
     Deny from all
     ErrorDocument 403 "Access denied per %{_webappconfdir}/%{name}.conf"
 
     Options -FollowSymLinks
+
+    <Files ~ "^((poller.*|cmd).php|cacti.sql)$">
+        Order allow,deny
+        Deny from all
+    </Files>
+</Directory>
+
+<Directory %{_datadir}/%{name}/scripts>
+    Order allow,deny
+    Deny from all
+</Directory>
+
+<Directory %{_datadir}/%{name}/cli>
+    Order allow,deny
+    Deny from all
+</Directory>
+
+<Directory %{_datadir}/%{name}/resource>
+    Order allow,deny
+    Deny from all
+</Directory>
+
+<Directory %{_datadir}/%{name}/lib>
+    Order allow,deny
+    Deny from all
 </Directory>
 EOF
 
@@ -135,7 +154,7 @@ Mandriva RPM specific notes
 setup
 -----
 The setup used here differs from default one, to achieve better FHS compliance.
-- the constant files are in %{_datadir}/%{name}/www
+- the constant files are in %{_datadir}/%{name}
 - the configuration file is /etc/cacti.conf
 - the variable files are in %{_localstatedir}/lib/%{name}
 - the log files are in %{_localstatedir}/log/%{name}
