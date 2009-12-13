@@ -1,6 +1,6 @@
 %define name    cacti
 %define version 0.8.7e
-%define release %mkrel 3
+%define release %mkrel 4
 
 %define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)
 
@@ -12,9 +12,11 @@ License:    GPL
 Group:      System/Servers
 URL:        http://www.cacti.net
 Source0:    http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-Patch0:     cacti-plugin-0.8.7e-PA-v2.5.diff
+Source1:    pa.sql
+Patch0:     cacti-0.8.7e-PA-v2.6.patch
 Patch1:     cacti-0.8.7e-fhs.patch
 Patch2:     cacti-0.8.7e-use-external-adodb.patch
+Patch3:     cacti-0.8.7e-fix-installer-crash.patch
 Requires:   apache-mod_php >= 2.0.54
 Requires:   php-adodb >= 1:4.64-1mdk
 Requires:   php-cli
@@ -45,11 +47,14 @@ a database, cacti handles the data gathering also. There is
 also SNMP support for those used to creating traffic graphs
 with MRTG.
 
+The plugin architecture patch has been applied
+
 %prep
 %setup -q
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 # fix perms
 find . -type d | xargs chmod 755
@@ -79,7 +84,10 @@ cp -pr scripts %{buildroot}%{_datadir}/%{name}
 cp -pr cli %{buildroot}%{_datadir}/%{name}
 cp -pr resource %{buildroot}%{_datadir}/%{name}
 cp -pr lib %{buildroot}%{_datadir}/%{name}
-cp -p cacti.sql %{buildroot}%{_datadir}/%{name}
+
+install -d -m 755 %{buildroot}%{_datadir}/%{name}/sql
+install -m 644 cacti.sql %{buildroot}%{_datadir}/%{name}/sql
+install -m 644 %{SOURCE1} %{buildroot}%{_datadir}/%{name}/sql
 
 # configuration
 install -d -m 755 %{buildroot}%{_sysconfdir}
@@ -95,36 +103,44 @@ cat > %{buildroot}%{_webappconfdir}/%{name}.conf <<EOF
 # Cacti Apache configuration file
 Alias /%{name} %{_datadir}/%{name}
 <Directory %{_datadir}/%{name}>
-    Order allow,deny
-    Allow from 127.0.0.1
+    Order deny,allow
     Deny from all
+    Allow from 127.0.0.1
     ErrorDocument 403 "Access denied per %{_webappconfdir}/%{name}.conf"
 
     Options -FollowSymLinks
 
-    <Files ~ "^((poller.*|cmd).php|cacti.sql)$">
-        Order allow,deny
+    <Files ~ "^(poller.*|cmd).php$">
+        Order deny,allow
         Deny from all
     </Files>
+
+    # recommanded value
+    php_value memory_limit 128M
 </Directory>
 
 <Directory %{_datadir}/%{name}/scripts>
-    Order allow,deny
+    Order deny,allow
     Deny from all
 </Directory>
 
 <Directory %{_datadir}/%{name}/cli>
-    Order allow,deny
+    Order deny,allow
     Deny from all
 </Directory>
 
 <Directory %{_datadir}/%{name}/resource>
-    Order allow,deny
+    Order deny,allow
     Deny from all
 </Directory>
 
 <Directory %{_datadir}/%{name}/lib>
-    Order allow,deny
+    Order deny,allow
+    Deny from all
+</Directory>
+
+<Directory %{_datadir}/%{name}/sql>
+    Order deny,allow
     Deny from all
 </Directory>
 EOF
@@ -161,7 +177,9 @@ The setup used here differs from default one, to achieve better FHS compliance.
 
 post-installation
 -----------------
-You have to create the MySQL database using the file /usr/share/cacti/cacti.sql.
+You have to create the MySQL database using the following files:
+- /usr/share/cacti/sql/cacti.sql
+- /usr/share/cacti/sql/pa.sql
 
 Additional useful packages
 --------------------------
