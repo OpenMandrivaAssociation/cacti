@@ -1,6 +1,6 @@
 %define name    cacti
 %define version 0.8.7e
-%define release %mkrel 5
+%define release %mkrel 6
 
 %if %mdkversion > 200910
 %define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)
@@ -22,6 +22,10 @@ Patch1:     cacti-0.8.7e-fhs.patch
 Patch2:     cacti-0.8.7e-use-external-adodb.patch
 Patch3:     cacti-0.8.7e-use-external-adodb-old.patch
 Patch4:     cacti-0.8.7e-fix-installer-crash.patch
+Patch10:    cli_add_graph.patch
+Patch11:    snmp_invalid_response.patch
+Patch12:    template_duplication.patch
+Patch13:    cross_site_fix.patch
 Requires:   apache-mod_php >= 2.0.54
 Requires:   php-adodb >= 1:4.64-1mdk
 Requires:   php-cli
@@ -65,6 +69,12 @@ The plugin architecture patch has been applied
 %patch3 -p1
 %endif
 
+# upstream patches
+%patch10 -p 1
+%patch11 -p 1
+%patch12 -p 1
+%patch13 -p 1
+
 # fix perms
 find . -type d | xargs chmod 755
 find . -type f | xargs chmod 644
@@ -72,7 +82,7 @@ chmod +x scripts/*.{pl,sh}
 chmod +x poller.php cmd.php
 
 # no .htaccess file
-rm -f cli/.htaccess
+#rm -f cli/.htaccess
 
 %build
 
