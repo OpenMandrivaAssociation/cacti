@@ -1,6 +1,6 @@
 %define name    cacti
 %define version 0.8.7e
-%define release %mkrel 6
+%define release %mkrel 7
 
 %if %mdkversion > 200910
 %define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)
@@ -124,7 +124,7 @@ Alias /%{name} %{_datadir}/%{name}
 <Directory %{_datadir}/%{name}>
     Order deny,allow
     Deny from all
-    Allow from 127.0.0.1
+    Allow from all
     ErrorDocument 403 "Access denied per %{_webappconfdir}/%{name}.conf"
 
     Options -FollowSymLinks
@@ -199,6 +199,8 @@ post-installation
 You have to create the MySQL database using the following files:
 - /usr/share/cacti/sql/cacti.sql
 - /usr/share/cacti/sql/pa.sql
+
+Warning, apache will segfault if cacti is run with an empty database...
 
 Additional useful packages
 --------------------------
