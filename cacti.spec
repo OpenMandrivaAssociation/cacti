@@ -1,6 +1,6 @@
 %define name    cacti
 %define version 0.8.7e
-%define release %mkrel 7
+%define release %mkrel 8
 
 %if %mdkversion > 200910
 %define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)
@@ -82,7 +82,7 @@ chmod +x scripts/*.{pl,sh}
 chmod +x poller.php cmd.php
 
 # no .htaccess file
-#rm -f cli/.htaccess
+rm -f cli/.htaccess
 
 %build
 
@@ -90,7 +90,6 @@ chmod +x poller.php cmd.php
 rm -rf %{buildroot}
 
 install -d -m 755 %{buildroot}%{_datadir}/%{name}
-install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}
 
 install -d -m 755 %{buildroot}%{_datadir}/%{name}
 cp *.php %{buildroot}%{_datadir}/%{name}
@@ -116,16 +115,20 @@ pushd %{buildroot}%{_datadir}/%{name}/include
 ln -s ../../../..%{_sysconfdir}/%{name}.conf config.php
 popd
 
+# data
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}
+pushd %{buildroot}%{_datadir}/%{name}
+ln -s ../../..%{_localstatedir}/lib/%{name} rra
+popd
+
 # apache configuration
 install -d -m 755 %{buildroot}%{_webappconfdir}
 cat > %{buildroot}%{_webappconfdir}/%{name}.conf <<EOF
 # Cacti Apache configuration file
 Alias /%{name} %{_datadir}/%{name}
 <Directory %{_datadir}/%{name}>
-    Order deny,allow
-    Deny from all
+    Order allow,deny
     Allow from all
-    ErrorDocument 403 "Access denied per %{_webappconfdir}/%{name}.conf"
 
     Options -FollowSymLinks
 
@@ -219,10 +222,14 @@ if [ $1 = "2" ]; then
 fi
 
 %post
+%if %mdkversion < 201010
 %_post_webapp
+%endif
 
 %postun
+%if %mdkversion < 201010
 %_postun_webapp
+%endif
 
 %files
 %defattr(-,root,root)
