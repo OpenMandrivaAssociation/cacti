@@ -36,11 +36,10 @@ Requires:   php-sockets
 Requires:   net-snmp-utils
 Requires:   net-snmp
 Requires:   rrdtool
-# webapp macros and scriptlets
-Requires(post):     rpm-helper >= 0.16-2mdv2007.0
-Requires(postun):   rpm-helper >= 0.16-2mdv2007.0
-BuildRequires:  rpm-helper >= 0.16-2mdv2007.0
-BuildRequires:  rpm-mandriva-setup >= 1.23-1mdv2007.0
+%if %mdkversion < 201010
+Requires(post):   rpm-helper
+Requires(postun):   rpm-helper
+%endif
 BuildArch:  noarch
 BuildRoot:  %{_tmppath}/%{name}-%{version}
 
