@@ -21,7 +21,6 @@ Patch0:     cacti-0.8.7e-PA-v2.6.patch
 Patch1:     cacti-0.8.7e-fhs.patch
 Patch2:     cacti-0.8.7e-use-external-adodb.patch
 Patch3:     cacti-0.8.7e-use-external-adodb-old.patch
-Patch4:     cacti-0.8.7e-fix-installer-crash.patch
 Patch10:    cli_add_graph.patch
 Patch11:    snmp_invalid_response.patch
 Patch12:    template_duplication.patch
