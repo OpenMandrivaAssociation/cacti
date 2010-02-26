@@ -1,6 +1,6 @@
 %define name    cacti
 %define version 0.8.7e
-%define release %mkrel 8
+%define release %mkrel 9
 
 %if %mdkversion > 200910
 %define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)
@@ -234,12 +234,10 @@ fi
 %files
 %defattr(-,root,root)
 %doc LICENSE README.mdv docs/CHANGELOG docs/CONTRIB docs/README
-%config(noreplace) %{_webappconfdir}/%{name}.conf
+%attr(640,root,apache) %config(noreplace) %{_webappconfdir}/%{name}.conf
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %{_sysconfdir}/cron.d/%{name}
 %{_datadir}/%{name}
 %attr(-,apache,apache) %{_localstatedir}/lib/%{name}
 %attr(-,apache,apache) %{_localstatedir}/log/%{name}
-
-
