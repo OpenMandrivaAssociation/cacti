@@ -174,6 +174,7 @@ EOF
 
 # logs
 install -d -m 755 %{buildroot}%{_var}/log/%{name}
+touch %{buildroot}%{_var}/log/%{name}/cacti.log
 install -d -m 755 %{buildroot}%{_sysconfdir}/logrotate.d
 cat > %{buildroot}%{_sysconfdir}/logrotate.d/%{name} <<EOF
 %{_var}/log/%{name}/*.log {
