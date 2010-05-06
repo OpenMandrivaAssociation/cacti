@@ -1,6 +1,6 @@
 %define name    cacti
 %define version 0.8.7e
-%define release %mkrel 10
+%define release %mkrel 11
 
 %if %mdkversion > 200910
 %define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)
