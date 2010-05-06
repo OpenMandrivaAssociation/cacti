@@ -174,7 +174,7 @@ EOF
 
 # logs
 install -d -m 755 %{buildroot}%{_var}/log/%{name}
-touch %{buildroot}%{_var}/log/%{name}/cacti.log
+touch %{buildroot}%{_localstatedir}/log/%{name}/%{name}.log
 install -d -m 755 %{buildroot}%{_sysconfdir}/logrotate.d
 cat > %{buildroot}%{_sysconfdir}/logrotate.d/%{name} <<EOF
 %{_var}/log/%{name}/*.log {
@@ -240,3 +240,4 @@ fi
 %{_datadir}/%{name}
 %attr(-,apache,apache) %{_localstatedir}/lib/%{name}
 %attr(-,apache,apache) %{_localstatedir}/log/%{name}
+%attr(-,apache,apache) %{_localstatedir}/log/%{name}/%{name}.log
