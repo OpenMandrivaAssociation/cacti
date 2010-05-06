@@ -8,6 +8,11 @@
 %define _requires_exceptions pear(/usr/share/php-adodb/adodb.inc.php)
 %endif
 
+%if %mdkversion < 200610
+%define _localstatedir %{_var}
+%define _webappconfdir %{_sysconfdir}/httpd/conf/webapps.d
+%endif
+
 Name:       %{name}
 Version:    %{version}
 Release:    %{release}
