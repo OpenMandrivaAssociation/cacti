@@ -1,6 +1,6 @@
 %define name    cacti
 %define version 0.8.7e
-%define release %mkrel 11
+%define release %mkrel 12
 
 %if %mdkversion > 200910
 %define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)
@@ -30,6 +30,7 @@ Patch10:    cli_add_graph.patch
 Patch11:    snmp_invalid_response.patch
 Patch12:    template_duplication.patch
 Patch13:    cross_site_fix.patch
+Patch14:    sql_injection_template_export.patch
 Requires:   apache-mod_php >= 2.0.54
 Requires:   php-adodb >= 1:4.64-1mdk
 Requires:   php-cli
@@ -77,6 +78,7 @@ The plugin architecture patch has been applied
 %patch11 -p 1
 %patch12 -p 1
 %patch13 -p 1
+%patch14 -p 1
 
 # fix perms
 find . -type d | xargs chmod 755
