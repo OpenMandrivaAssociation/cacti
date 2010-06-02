@@ -1,6 +1,6 @@
 %define name    cacti
-%define version 0.8.7e
-%define release %mkrel 12
+%define version 0.8.7f
+%define release %mkrel 1
 
 %if %mdkversion > 200910
 %define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)
@@ -22,15 +22,9 @@ Group:      System/Servers
 URL:        http://www.cacti.net
 Source0:    http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
 Source1:    pa.sql
-Patch0:     cacti-0.8.7e-PA-v2.6.patch
 Patch1:     cacti-0.8.7e-fhs.patch
 Patch2:     cacti-0.8.7e-use-external-adodb.patch
 Patch3:     cacti-0.8.7e-use-external-adodb-old.patch
-Patch10:    cli_add_graph.patch
-Patch11:    snmp_invalid_response.patch
-Patch12:    template_duplication.patch
-Patch13:    cross_site_fix.patch
-Patch14:    sql_injection_template_export.patch
 Requires:   apache-mod_php >= 2.0.54
 Requires:   php-adodb >= 1:4.64-1mdk
 Requires:   php-cli
@@ -64,21 +58,13 @@ The plugin architecture patch has been applied
 
 %prep
 %setup -q
-%patch0 -p1
 %patch1 -p1
 # location of adodb changed after 
 %if %mdkversion > 200910
-%patch2 -p1
+%patch2 -p0
 %else
 %patch3 -p1
 %endif
-
-# upstream patches
-%patch10 -p 1
-%patch11 -p 1
-%patch12 -p 1
-%patch13 -p 1
-%patch14 -p 1
 
 # fix perms
 find . -type d | xargs chmod 755
