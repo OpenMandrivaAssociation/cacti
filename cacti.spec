@@ -1,6 +1,6 @@
 %define name    cacti
-%define version 0.8.7f
-%define release %mkrel 1
+%define version 0.8.7g
+%define release %mkrel 0.0.beta2.1
 
 %if %mdkversion > 200910
 %define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)
@@ -20,7 +20,7 @@ Summary:    Php frontend for rrdtool
 License:    GPL
 Group:      System/Servers
 URL:        http://www.cacti.net
-Source0:    http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
+Source0:    http://www.cacti.net/downloads/%{name}-%{version}-beta2.tar.gz
 Source1:    pa.sql
 Patch1:     cacti-0.8.7e-fhs.patch
 Patch2:     cacti-0.8.7e-use-external-adodb.patch
@@ -57,7 +57,8 @@ with MRTG.
 The plugin architecture patch has been applied
 
 %prep
-%setup -q
+
+%setup -q -n %{name}-%{version}-beta2
 %patch1 -p1
 # location of adodb changed after 
 %if %mdkversion > 200910
