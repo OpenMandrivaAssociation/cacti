@@ -1,7 +1,3 @@
-%define name    cacti
-%define version 0.8.7g
-%define release %mkrel 1
-
 %if %mdkversion > 200910
 %define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)
 %else
@@ -13,9 +9,18 @@
 %define _webappconfdir %{_sysconfdir}/httpd/conf/webapps.d
 %endif
 
-Name:       %{name}
-Version:    %{version}
-Release:    %{release}
+%if %mandriva_branch == Cooker
+# Cooker
+%define release %mkrel 2
+%else
+# Old distros
+%define subrel 1
+%define release %mkrel 0
+%endif
+
+Name:       cacti
+Version:    0.8.7g
+Release:    %release
 Summary:    Php frontend for rrdtool
 License:    GPL
 Group:      System/Servers
@@ -25,6 +30,11 @@ Source1:    pa.sql
 Patch1:     cacti-0.8.7e-fhs.patch
 Patch2:     cacti-0.8.7e-use-external-adodb.patch
 Patch3:     cacti-0.8.7e-use-external-adodb-old.patch
+Patch10: http://www.cacti.net/downloads/patches/0.8.7g/data_source_deactivate.patch
+Patch11: http://www.cacti.net/downloads/patches/0.8.7g/graph_list_view.patch
+Patch12: http://www.cacti.net/downloads/patches/0.8.7g/html_output.patch
+Patch13: http://www.cacti.net/downloads/patches/0.8.7g/ldap_group_authenication.patch
+Patch14: http://www.cacti.net/downloads/patches/0.8.7g/script_server_command_line_parse.patch
 Requires:   apache-mod_php >= 2.0.54
 Requires:   php-adodb >= 1:4.64-1mdk
 Requires:   php-cli
@@ -66,6 +76,12 @@ The plugin architecture patch has been applied
 %else
 %patch3 -p1
 %endif
+
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
 
 # fix perms
 find . -type d | xargs chmod 755
