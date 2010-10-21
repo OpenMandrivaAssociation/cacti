@@ -11,7 +11,7 @@
 
 %if %mandriva_branch == Cooker
 # Cooker
-%define release %mkrel 2
+%define release %mkrel 3
 %else
 # Old distros
 %define subrel 1
@@ -178,7 +178,6 @@ EOF
 # cron task
 install -d -m 755 %{buildroot}%{_sysconfdir}/cron.d
 cat > %{buildroot}%{_sysconfdir}/cron.d/%{name} <<EOF
-#!/bin/sh
 */5 * * * *     apache     php %{_datadir}/%{name}/poller.php > /dev/null 2>&1
 EOF
 
