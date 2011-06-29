@@ -2,7 +2,7 @@
 
 %if %mandriva_branch == Cooker
 # Cooker
-%define release %mkrel 3
+%define release %mkrel 4
 %else
 # Old distros
 %define subrel 1
@@ -18,8 +18,9 @@ Group:      System/Servers
 URL:        http://www.cacti.net
 Source0:    http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
 Source1:    pa.sql
+Patch0:     cacti-plugin-0.8.7g-PA-v2.8.patch
 Patch1:     cacti-0.8.7e-fhs.patch
-Patch2:     cacti-0.8.7e-use-external-adodb.patch
+Patch2:     cacti-0.8.7g-use-external-adodb.patch
 Patch10: http://www.cacti.net/downloads/patches/0.8.7g/data_source_deactivate.patch
 Patch11: http://www.cacti.net/downloads/patches/0.8.7g/graph_list_view.patch
 Patch12: http://www.cacti.net/downloads/patches/0.8.7g/html_output.patch
@@ -36,10 +37,6 @@ Requires:   php-sockets
 Requires:   net-snmp-utils
 Requires:   net-snmp
 Requires:   rrdtool
-%if %mdkversion < 201010
-Requires(post):   rpm-helper
-Requires(postun):   rpm-helper
-%endif
 BuildArch:  noarch
 BuildRoot:  %{_tmppath}/%{name}-%{version}
 
@@ -57,11 +54,10 @@ with MRTG.
 The plugin architecture patch has been applied
 
 %prep
-
 %setup -q -n %{name}-%{version}
+%patch0 -p1
 %patch1 -p1
-# location of adodb changed after 
-%patch2 -p0
+%patch2 -p1
 
 %patch10 -p1
 %patch11 -p1
@@ -100,6 +96,9 @@ cp -pr lib %{buildroot}%{_datadir}/%{name}
 install -d -m 755 %{buildroot}%{_datadir}/%{name}/sql
 install -m 644 cacti.sql %{buildroot}%{_datadir}/%{name}/sql
 install -m 644 %{SOURCE1} %{buildroot}%{_datadir}/%{name}/sql
+
+# fix SQL schemas
+perl -pi -e 's/TYPE=/ENGINE=/' %{buildroot}%{_datadir}/%{name}/sql/*
 
 # configuration
 install -d -m 755 %{buildroot}%{_sysconfdir}
