@@ -2,7 +2,7 @@
 
 %if %mandriva_branch == Cooker
 # Cooker
-%define release %mkrel 4
+%define release %mkrel 5
 %else
 # Old distros
 %define subrel 1
@@ -97,6 +97,8 @@ install -d -m 755 %{buildroot}%{_datadir}/%{name}/sql
 install -m 644 cacti.sql %{buildroot}%{_datadir}/%{name}/sql
 install -m 644 %{SOURCE1} %{buildroot}%{_datadir}/%{name}/sql
 
+install -d -m 755 %{buildroot}%{_datadir}/%{name}/plugins
+
 # fix SQL schemas
 perl -pi -e 's/TYPE=/ENGINE=/' %{buildroot}%{_datadir}/%{name}/sql/*
 
@@ -107,6 +109,9 @@ mv %{buildroot}%{_datadir}/%{name}/include/config.php \
 pushd %{buildroot}%{_datadir}/%{name}/include
 ln -s ../../../..%{_sysconfdir}/%{name}.conf config.php
 popd
+
+perl -pi -e 's|\$url_path = "/";|\$url_path = "/cacti/";|' \
+    %{buildroot}%{_sysconfdir}/cacti.conf
 
 # data
 install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}
