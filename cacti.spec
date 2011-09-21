@@ -108,6 +108,7 @@ mv %{buildroot}%{_datadir}/%{name}/include/config.php \
     %{buildroot}%{_sysconfdir}/%{name}.conf
 pushd %{buildroot}%{_datadir}/%{name}/include
 ln -s ../../../..%{_sysconfdir}/%{name}.conf config.php
+chmod 600 %{buildroot}%{_sysconfdir}/%{name}.conf
 popd
 
 perl -pi -e 's|\$url_path = "/";|\$url_path = "/cacti/";|' \
