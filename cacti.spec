@@ -2,43 +2,37 @@
 
 %if %mandriva_branch == Cooker
 # Cooker
-%define release %mkrel 6
+%define release %mkrel 1
 %else
 # Old distros
 %define subrel 1
 %define release %mkrel 0
 %endif
 
-Name:       cacti
-Version:    0.8.7g
-Release:    %release
-Summary:    Php frontend for rrdtool
-License:    GPL
-Group:      System/Servers
-URL:        http://www.cacti.net
-Source0:    http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-Source1:    pa.sql
-Patch0:     cacti-plugin-0.8.7g-PA-v2.8.patch
-Patch1:     cacti-0.8.7e-fhs.patch
-Patch2:     cacti-0.8.7g-use-external-adodb.patch
-Patch10: http://www.cacti.net/downloads/patches/0.8.7g/data_source_deactivate.patch
-Patch11: http://www.cacti.net/downloads/patches/0.8.7g/graph_list_view.patch
-Patch12: http://www.cacti.net/downloads/patches/0.8.7g/html_output.patch
-Patch13: http://www.cacti.net/downloads/patches/0.8.7g/ldap_group_authenication.patch
-Patch14: http://www.cacti.net/downloads/patches/0.8.7g/script_server_command_line_parse.patch
-Requires:   apache-mod_php >= 2.0.54
-Requires:   php-adodb >= 1:4.64-1mdk
-Requires:   php-cli
-Requires:   php-gd
-Requires:   php-mysql
-Requires:   php-snmp
-Requires:   php-xml
-Requires:   php-sockets
-Requires:   net-snmp-utils
-Requires:   net-snmp
-Requires:   rrdtool
-BuildArch:  noarch
-BuildRoot:  %{_tmppath}/%{name}-%{version}
+Summary:	Php frontend for rrdtool
+Name:		cacti
+Version:	0.8.7h
+Release:	%release
+License:	GPL
+Group:		System/Servers
+URL:		http://www.cacti.net
+Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
+Source1:	http://www.cacti.net/downloads/pia/cacti-plugin-0.8.7h-PA-v3.0.tar.gz
+Patch0:		cacti-0.8.7e-fhs.patch
+Patch1:		cacti-0.8.7g-use-external-adodb.patch
+Requires:	apache-mod_php >= 2.0.54
+Requires:	php-adodb >= 1:4.64-1mdk
+Requires:	php-cli
+Requires:	php-gd
+Requires:	php-mysql
+Requires:	php-snmp
+Requires:	php-xml
+Requires:	php-sockets
+Requires:	net-snmp-utils
+Requires:	net-snmp
+Requires:	rrdtool
+BuildArch:	noarch
+BuildRoot:	%{_tmppath}/%{name}-%{version}
 
 %description
 Cacti is a complete frondend to rrdtool, it stores all of the
@@ -54,16 +48,16 @@ with MRTG.
 The plugin architecture patch has been applied
 
 %prep
-%setup -q -n %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
+%setup -q -n %{name}-%{version} -a1
+
+patch -p1 < cacti-plugin-arch/cacti-plugin-0.8.7h-PA-v3.0.diff
+
+%patch0 -p1
+%patch1 -p0
+
+rm -rf lib/adodb
+find . -type f -name "*.orig" | xargs rm -f
 
 # fix perms
 find . -type d | xargs chmod 755
@@ -95,7 +89,7 @@ cp -pr lib %{buildroot}%{_datadir}/%{name}
 
 install -d -m 755 %{buildroot}%{_datadir}/%{name}/sql
 install -m 644 cacti.sql %{buildroot}%{_datadir}/%{name}/sql
-install -m 644 %{SOURCE1} %{buildroot}%{_datadir}/%{name}/sql
+install -m 644 cacti-plugin-arch/pa.sql %{buildroot}%{_datadir}/%{name}/sql
 
 install -d -m 755 %{buildroot}%{_datadir}/%{name}/plugins
 
