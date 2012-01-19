@@ -2,7 +2,7 @@
 
 %if %mandriva_branch == Cooker
 # Cooker
-%define release %mkrel 2
+%define release %mkrel 3
 %else
 # Old distros
 %define subrel 1
@@ -20,7 +20,7 @@ Group:		System/Servers
 URL:		http://www.cacti.net
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}-PIA-%{pia_version}.tar.gz
 Patch0:		cacti-0.8.7i-PIA-3.1-fhs.diff
-Patch1:		cacti-0.8.7g-use-external-adodb.patch
+Patch1:		cacti-0.8.7i-PIA-3.1-use-external-adodb.diff
 Requires:	apache-mod_php >= 2.0.54
 Requires:	php-adodb >= 1:4.64-1mdk
 Requires:	php-cli
