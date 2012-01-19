@@ -1,11 +1,11 @@
-%define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)
+%define _requires_exceptions pear(/usr/share/php/adodb/adodb.inc.php)\\|pear(/usr/share/php-adodb/adodb.inc.php)
 
 %if %mandriva_branch == Cooker
 # Cooker
-%define release %mkrel 3
+%define release %mkrel 4
 %else
 # Old distros
-%define subrel 1
+%define subrel 2
 %define release %mkrel 0
 %endif
 
@@ -36,17 +36,16 @@ BuildArch:	noarch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
-Cacti is a complete frondend to rrdtool, it stores all of the
-nessesary information to create graphs and populate them with
-data in a MySQL database.
+Cacti is a complete frondend to rrdtool, it stores all of the nessesary
+information to create graphs and populate them with data in a MySQL database.
 
-The frontend is completely PHP driven. Along with being able
-to maintain Graphs, Data Sources, and Round Robin Archives in
-a database, cacti handles the data gathering also. There is
-also SNMP support for those used to creating traffic graphs
-with MRTG.
+The frontend is completely PHP driven. Along with being able to maintain
+Graphs, Data Sources, and Round Robin Archives in a database, cacti handles
+the data gathering also. There is also SNMP support for those used to creating
+traffic graphs with MRTG.
 
-The plugin architecture patch has been applied
+This is the %{name}-%{version}-PIA-%{pia_version} release that has the
+plugin architecture implemented that previous was provided with a patch.
 
 %prep
 
@@ -54,6 +53,11 @@ The plugin architecture patch has been applied
 
 %patch0 -p1
 %patch1 -p0
+
+%if %mdkversion < 200910
+# php-adodb in mes5 is a little different...
+perl -pi -e "s|/usr/share/php/adodb/|/usr/share/php-adodb/|g" include/global.php
+%endif
 
 rm -rf lib/adodb
 find . -type f -name "*.orig" | xargs rm -f
@@ -73,8 +77,6 @@ rm -f cli/.htaccess
 rm -rf %{buildroot}
 
 install -d -m 755 %{buildroot}%{_datadir}/%{name}
-
-install -d -m 755 %{buildroot}%{_datadir}/%{name}
 cp *.php %{buildroot}%{_datadir}/%{name}
 cp -pr docs %{buildroot}%{_datadir}/%{name}
 cp -pr images %{buildroot}%{_datadir}/%{name}
@@ -90,9 +92,6 @@ install -d -m 755 %{buildroot}%{_datadir}/%{name}/sql
 install -m 644 cacti.sql %{buildroot}%{_datadir}/%{name}/sql
 
 install -d -m 755 %{buildroot}%{_datadir}/%{name}/plugins
-
-# fix SQL schemas
-perl -pi -e 's/TYPE=/ENGINE=/' %{buildroot}%{_datadir}/%{name}/sql/*
 
 # configuration
 install -d -m 755 %{buildroot}%{_sysconfdir}
@@ -200,9 +199,6 @@ Additional useful packages
 - a MySQL database, either locale or remote
 EOF
 
-%clean
-rm -rf %{buildroot}
-
 %pre
 if [ $1 = "2" ]; then
     # fix for old setup
@@ -211,14 +207,26 @@ if [ $1 = "2" ]; then
     fi
 fi
 
+%post
+%if %mdkversion < 201010
+%_post_webapp
+%endif
+
+%postun
+%if %mdkversion < 201010
+%_postun_webapp
+%endif
+
+%clean
+rm -rf %{buildroot}
+
 %files
 %defattr(-,root,root)
 %doc LICENSE README.mdv docs/CHANGELOG docs/CONTRIB docs/README
 %attr(640,root,apache) %config(noreplace) %{_webappconfdir}/%{name}.conf
-%attr(640,root,apache) %%config(noreplace) %{_sysconfdir}/%{name}.conf
+%attr(640,root,apache) %config(noreplace) %{_sysconfdir}/%{name}.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %{_sysconfdir}/cron.d/%{name}
 %{_datadir}/%{name}
-%attr(-,apache,apache) %{_localstatedir}/lib/%{name}
-%attr(-,apache,apache) %{_localstatedir}/log/%{name}
+%attr(-,apache,apache) %dir %{_localstatedir}/log/%{name}
 %attr(-,apache,apache) %{_localstatedir}/log/%{name}/%{name}.log
