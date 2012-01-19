@@ -2,7 +2,7 @@
 
 %if %mandriva_branch == Cooker
 # Cooker
-%define release %mkrel 4
+%define release %mkrel 5
 %else
 # Old distros
 %define subrel 2
@@ -228,5 +228,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %{_sysconfdir}/cron.d/%{name}
 %{_datadir}/%{name}
+%attr(-,apache,apache) %dir %{_localstatedir}/lib/%{name}
 %attr(-,apache,apache) %dir %{_localstatedir}/log/%{name}
 %attr(-,apache,apache) %{_localstatedir}/log/%{name}/%{name}.log
