@@ -9,16 +9,17 @@
 %define release %mkrel 0
 %endif
 
+%define pia_version 3.1
+
 Summary:	Php frontend for rrdtool
 Name:		cacti
-Version:	0.8.7h
+Version:	0.8.7i
 Release:	%release
 License:	GPL
 Group:		System/Servers
 URL:		http://www.cacti.net
-Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-Source1:	http://www.cacti.net/downloads/pia/cacti-plugin-0.8.7h-PA-v3.0.tar.gz
-Patch0:		cacti-0.8.7e-fhs.patch
+Source0:	http://www.cacti.net/downloads/%{name}-%{version}-PIA-%{pia_version}.tar.gz
+Patch0:		cacti-0.8.7i-PIA-3.1-fhs.diff
 Patch1:		cacti-0.8.7g-use-external-adodb.patch
 Requires:	apache-mod_php >= 2.0.54
 Requires:	php-adodb >= 1:4.64-1mdk
@@ -32,7 +33,7 @@ Requires:	net-snmp-utils
 Requires:	net-snmp
 Requires:	rrdtool
 BuildArch:	noarch
-BuildRoot:	%{_tmppath}/%{name}-%{version}
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 Cacti is a complete frondend to rrdtool, it stores all of the
@@ -49,9 +50,7 @@ The plugin architecture patch has been applied
 
 %prep
 
-%setup -q -n %{name}-%{version} -a1
-
-patch -p1 < cacti-plugin-arch/cacti-plugin-0.8.7h-PA-v3.0.diff
+%setup -q -n %{name}-%{version}-PIA-%{pia_version}
 
 %patch0 -p1
 %patch1 -p0
@@ -89,7 +88,6 @@ cp -pr lib %{buildroot}%{_datadir}/%{name}
 
 install -d -m 755 %{buildroot}%{_datadir}/%{name}/sql
 install -m 644 cacti.sql %{buildroot}%{_datadir}/%{name}/sql
-install -m 644 cacti-plugin-arch/pa.sql %{buildroot}%{_datadir}/%{name}/sql
 
 install -d -m 755 %{buildroot}%{_datadir}/%{name}/plugins
 
@@ -194,7 +192,6 @@ post-installation
 -----------------
 You have to create the MySQL database using the following files:
 - /usr/share/cacti/sql/cacti.sql
-- /usr/share/cacti/sql/pa.sql
 
 Warning, apache will segfault if cacti is run with an empty database...
 
@@ -218,7 +215,7 @@ fi
 %defattr(-,root,root)
 %doc LICENSE README.mdv docs/CHANGELOG docs/CONTRIB docs/README
 %attr(640,root,apache) %config(noreplace) %{_webappconfdir}/%{name}.conf
-%config(noreplace) %{_sysconfdir}/%{name}.conf
+%attr(640,root,apache) %%config(noreplace) %{_sysconfdir}/%{name}.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %{_sysconfdir}/cron.d/%{name}
 %{_datadir}/%{name}
