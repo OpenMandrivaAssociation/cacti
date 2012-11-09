@@ -1,0 +1,94 @@
+diff -Naur cacti-0.8.7i-PIA-3.1/cli/upgrade_database.php cacti-0.8.7i-PIA-3.1.oden/cli/upgrade_database.php
+--- cacti-0.8.7i-PIA-3.1/cli/upgrade_database.php	2011-12-12 02:56:06.000000000 +0100
++++ cacti-0.8.7i-PIA-3.1.oden/cli/upgrade_database.php	2012-01-19 12:20:50.242410923 +0100
+@@ -78,7 +78,7 @@
+ 	print "Your Cacti is already up to date.\n";
+ 	exit;
+ } else if ($old_cacti_version < 0.7) {
+-	print 'You are attempting to install cacti ' . $config['cacti_version'] . " onto a 0.6.x database.\nTo continue, you must create a new database, import 'cacti.sql' into it,\nand 	update 'include/config.php' to point to the new database.\n";
++	print 'You are attempting to install cacti ' . $config['cacti_version'] . " onto a 0.6.x database.\nTo continue, you must create a new database, import 'cacti.sql' into it,\nand 	update '/etc/cacti.conf' to point to the new database.\n";
+ 	exit;
+ } else if (empty($old_cacti_version)) {
+ 	print "You have created a new database, but have not yet imported the 'cacti.sql' file.\n";
+diff -Naur cacti-0.8.7i-PIA-3.1/include/config.php cacti-0.8.7i-PIA-3.1.oden/include/config.php
+--- cacti-0.8.7i-PIA-3.1/include/config.php	2011-12-12 03:19:29.000000000 +0100
++++ cacti-0.8.7i-PIA-3.1.oden/include/config.php	2012-01-19 12:16:31.684349395 +0100
+@@ -40,5 +40,8 @@
+ 
+ /* Default session name - Session name must contain alpha characters */
+ $cacti_session_name = "Cacti";
++$config["library_path"] = '/usr/share/cacti/lib';
++$config["rra_path"] = '/var/lib/cacti';
++$config['url_path'] = '/cacti/';
+ 
+ ?>
+diff -Naur cacti-0.8.7i-PIA-3.1/include/global.php cacti-0.8.7i-PIA-3.1.oden/include/global.php
+--- cacti-0.8.7i-PIA-3.1/include/global.php	2011-12-12 03:09:54.000000000 +0100
++++ cacti-0.8.7i-PIA-3.1.oden/include/global.php	2012-01-19 12:20:05.917254658 +0100
+@@ -43,10 +43,10 @@
+ $cacti_session_name = "Cacti";
+ 
+ /* Include configuration */
+-include(dirname(__FILE__) . "/config.php");
++include "/etc/cacti.conf";
+ 
+ if (isset($config["cacti_version"])) {
+-	die("Invalid include/config.php file detected.");
++	die("Invalid /etc/cacti.conf file detected.");
+ 	exit;
+ }
+ 
+diff -Naur cacti-0.8.7i-PIA-3.1/include/global_settings.php cacti-0.8.7i-PIA-3.1.oden/include/global_settings.php
+--- cacti-0.8.7i-PIA-3.1/include/global_settings.php	2011-12-12 03:09:54.000000000 +0100
++++ cacti-0.8.7i-PIA-3.1.oden/include/global_settings.php	2012-01-19 12:15:33.518286149 +0100
+@@ -98,7 +98,7 @@
+ 			"friendly_name" => "Cacti Log File Path",
+ 			"description" => "The path to your Cacti log file (if blank, defaults to <path_cacti>/log/cacti.log)",
+ 			"method" => "filepath",
+-			"default" => $config["base_path"] . "/log/cacti.log",
++			"default" => "/var/log/cacti/cacti.log",
+ 			"max_length" => "255"
+ 			),
+ 		"pollerpaths_header" => array(
+diff -Naur cacti-0.8.7i-PIA-3.1/install/index.php cacti-0.8.7i-PIA-3.1.oden/install/index.php
+--- cacti-0.8.7i-PIA-3.1/install/index.php	2011-12-12 02:56:07.000000000 +0100
++++ cacti-0.8.7i-PIA-3.1.oden/install/index.php	2012-01-19 12:20:25.077286259 +0100
+@@ -48,7 +48,7 @@
+ 	print "	<p style='font-family: Verdana, Arial; font-size: 16px; font-weight: bold; color: red;'>Error</p>
+ 		<p style='font-family: Verdana, Arial; font-size: 12px;'>You are attempting to install cacti " . $config["cacti_version"] . "
+ 		onto a 0.6.x database. To continue, you must create a new database, import 'cacti.sql' into it, and
+-		update 'include/config.php' to point to the new database.</p>";
++		update '/etc/cacti.conf' to point to the new database.</p>";
+ 	exit;
+ }elseif (empty($old_cacti_version)) {
+ 	print "	<p style='font-family: Verdana, Arial; font-size: 16px; font-weight: bold; color: red;'>Error</p>
+@@ -266,7 +266,7 @@
+ if (config_value_exists("path_cactilog")) {
+ 	$input["path_cactilog"]["default"] = read_config_option("path_cactilog");
+ } else {
+-	$input["path_cactilog"]["default"] = $config["base_path"] . "/log/cacti.log";
++	$input["path_cactilog"]["default"] = "/var/log/cacti/cacti.log";
+ }
+ 
+ /* SNMP Version */
+@@ -526,7 +526,7 @@
+ 						</p>
+ 
+ 						<p>The following information has been determined from Cacti's configuration file.
+-						If it is not correct, please edit 'include/config.php' before continuing.</p>
++						If it is not correct, please edit '/etc/cacti.conf' before continuing.</p>
+ 
+ 						<p class="code">
+ 						<?php	print "Database User: $database_username<br>";
+diff -Naur cacti-0.8.7i-PIA-3.1/lib/database.php cacti-0.8.7i-PIA-3.1.oden/lib/database.php
+--- cacti-0.8.7i-PIA-3.1/lib/database.php	2011-12-12 02:56:06.000000000 +0100
++++ cacti-0.8.7i-PIA-3.1.oden/lib/database.php	2012-01-19 12:15:33.519285937 +0100
+@@ -58,7 +58,7 @@
+ 		usleep(40000);
+ 	}
+ 
+-	die("FATAL: Cannot connect to MySQL server on '$host'. Please make sure you have specified a valid MySQL database name in 'include/config.php'\n");
++	die("FATAL: Cannot connect to MySQL server on '$host'. Please make sure you have specified a valid MySQL database name in '/etc/cacti.conf'\n");
+ 
+ 	return(0);
+ }
