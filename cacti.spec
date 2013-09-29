@@ -110,14 +110,12 @@ cat > %{buildroot}%{_webappconfdir}/%{name}.conf <<EOF
 # Cacti Apache configuration file
 Alias /%{name} %{_datadir}/%{name}
 <Directory %{_datadir}/%{name}>
-    Order allow,deny
-    Allow from all
+    Require all granted
 
     Options -FollowSymLinks
 
     <Files ~ "^(poller.*|cmd).php$">
-        Order deny,allow
-        Deny from all
+        Require all denied
     </Files>
 
     # recommanded value
@@ -125,28 +123,23 @@ Alias /%{name} %{_datadir}/%{name}
 </Directory>
 
 <Directory %{_datadir}/%{name}/scripts>
-    Order deny,allow
-    Deny from all
+    Require all denied
 </Directory>
 
 <Directory %{_datadir}/%{name}/cli>
-    Order deny,allow
-    Deny from all
+    Require all denied
 </Directory>
 
 <Directory %{_datadir}/%{name}/resource>
-    Order deny,allow
-    Deny from all
+    Require all denied
 </Directory>
 
 <Directory %{_datadir}/%{name}/lib>
-    Order deny,allow
-    Deny from all
+    Require all denied
 </Directory>
 
 <Directory %{_datadir}/%{name}/sql>
-    Order deny,allow
-    Deny from all
+    Require all denied
 </Directory>
 EOF
 
