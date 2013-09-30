@@ -9,7 +9,7 @@
 Summary:	Php frontend for rrdtool
 Name:		cacti
 Version:	0.8.7i
-Release:	4
+Release:	5
 License:	GPL
 Group:		System/Servers
 URL:		http://www.cacti.net
