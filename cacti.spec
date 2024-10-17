@@ -12,7 +12,7 @@ Version:	0.8.7i
 Release:	6
 License:	GPL
 Group:		System/Servers
-URL:		http://www.cacti.net
+URL:		https://www.cacti.net
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}-PIA-%{pia_version}.tar.gz
 Patch0:		cacti-0.8.7i-PIA-3.1-fhs.diff
 Patch1:		cacti-0.8.7i-PIA-3.1-use-external-adodb.diff
